@@ -6,15 +6,21 @@ from matplotlib import style
 style.use('fivethirtyeight')
 import numpy as np
 import pandas as pd
+from scipy.optimize import fsolve
 #from IPython.display impor display
 from SPQentrada import *
 
 #Datos iniciales
-p1 = 5
+p1 = 2
 p2 = 1
 vp_ini = 0.5
 
-Kv_bar = 5
+d_in = 1.0 #pulgada
+L1 = 25.0
+L2 = 25.0
+fd = 0.03
+
+Kv_bar = 5.0
 rho = 1000  #kg/m3
 
 dt = 2
@@ -73,6 +79,8 @@ def ejercicio1():
     #Autocalculados
     Kv_SI = Kv_bar * 0.000000878
     G = rho / 1000
+    d_m = d_in * 0.0254
+    area = np.pi * d_m**2 / 4
     
     T = []
     P1 = []
@@ -104,8 +112,39 @@ def ejercicio1():
     
         p1_pascal = p1t * 100000
         p2_pascal = p2t * 100000
+        
+        # revisar caso
+        def FOsolv (x):
+            
+            v = x[0]
+            pA_pascal = x[1]
+            pB_pascal = x[2]
+            
+            F01 = (p1_pascal - pA_pascal) / (rho*9.8) \
+                  - fd * L1/d_m * v**2/(2*9.8)
+            
+            F02 = (pB_pascal - p2_pascal) / (rho*9.8) \
+                  - fd * L2/d_m * v**2/(2*9.8)
+            
+            F03 = (Kv_SI * vpt * ((pA_pascal -  pB_pascal)/ G)**0.5) - v*area
+            
+            return [F01, F02, F03] 
+        
+        semilla = [1.5, 170000, 120000]
     
-        f = Kv_SI * vpt * ((p1_pascal -  p2_pascal)/ G)**0.5
+        sol = fsolve(FOsolv, semilla)
+        v = sol[0]
+        
+        pA_pascal = sol[1]
+        pB_pascal = sol[2]
+        print (v)
+        print (pA_pascal)
+        print (pB_pascal)
+        
+        #sQr = (Kv_SI * vpt * ((pA_pascal -  pB_pascal)/ G)**0.5) - v*area
+        
+        f = v*area
+        
         F = np. append(F, f)
 
     F_m3h= F * 3600

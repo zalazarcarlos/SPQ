@@ -6,15 +6,21 @@ from matplotlib import style
 style.use('fivethirtyeight')
 import numpy as np
 import pandas as pd
+from scipy.optimize import newton
 #from IPython.display impor display
 from SPQentrada import *
 
 #Datos iniciales
-p1 = 5
+p1 = 2
 p2 = 1
 vp_ini = 0.5
 
-Kv_bar = 5
+d_in = 1.0 #pulgada
+L1 = 25.0
+L2 = 25.0
+fd = 0.03
+
+Kv_bar = 5.0
 rho = 1000  #kg/m3
 
 dt = 2
@@ -73,6 +79,8 @@ def ejercicio1():
     #Autocalculados
     Kv_SI = Kv_bar * 0.000000878
     G = rho / 1000
+    d_m = d_in * 0.0254
+    area = np.pi * d_m**2 / 4
     
     T = []
     P1 = []
@@ -104,8 +112,31 @@ def ejercicio1():
     
         p1_pascal = p1t * 100000
         p2_pascal = p2t * 100000
+        
+        # revisar caso
+        def FOsolv (v):
+            
+            pA_pascal = p1_pascal - ((fd * L1/d_m * v**2/(2*9.8))* rho * 9.8) 
+            
+            pB_pascal = p2_pascal + ((fd * L2/d_m * v**2/(2*9.8))* rho * 9.8)            
+            
+            F0 = (Kv_SI * vpt * ((pA_pascal -  pB_pascal)/ G)**0.5) - v*area
+            
+            return F0
     
-        f = Kv_SI * vpt * ((p1_pascal -  p2_pascal)/ G)**0.5
+        sol = newton(FOsolv, 1.5)
+        v = sol
+        
+        pAi = p1_pascal - ((fd * L1/d_m * v**2/(2*9.8))* rho * 9.8)
+        
+        pB_pascal = p2_pascal + ((fd * L2/d_m * v**2/(2*9.8))* rho * 9.8)
+        
+        print (v)
+        print (pAi)
+        print (pB_pascal)
+        
+        f = v*area
+        
         F = np. append(F, f)
 
     F_m3h= F * 3600

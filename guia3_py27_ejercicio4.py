@@ -6,15 +6,22 @@ from matplotlib import style
 style.use('fivethirtyeight')
 import numpy as np
 import pandas as pd
+from scipy.optimize import newton
 #from IPython.display impor display
 from SPQentrada import *
 
 #Datos iniciales
-p1 = 5
+p1 = 2
 p2 = 1
 vp_ini = 0.5
 
-Kv_bar = 5
+d_in = 1.0 #pulgada
+L1 = 25.0
+L2 = 25.0
+fd = 0.03
+
+Kv_bar = 5.0
+R = 50
 rho = 1000  #kg/m3
 
 dt = 2
@@ -63,7 +70,7 @@ A_exdv = 0
 
 #límites "y". Cambio de escala
 escalapresion = (0,3)
-escalaF = (1,7)
+escalaF = (0,7)
 escalaVP = (0,1)
 
 
@@ -73,11 +80,14 @@ def ejercicio1():
     #Autocalculados
     Kv_SI = Kv_bar * 0.000000878
     G = rho / 1000
+    d_m = d_in * 0.0254
+    area = np.pi * d_m**2 / 4
     
     T = []
     P1 = []
     P2 = []
     VP = []
+    kv_ASTE = []
     F = []
 
     for i in range(0,1001,1):
@@ -104,8 +114,30 @@ def ejercicio1():
     
         p1_pascal = p1t * 100000
         p2_pascal = p2t * 100000
+        
+        kv_asterisco = Kv_SI * R **(vpt - 1)
+        
+        kv_ASTE = np.append(kv_ASTE, kv_asterisco)
+        
+        # revisar caso
+        def FOsolv (v):
+            
+            pA_pascal = p1_pascal - ((fd * L1/d_m * v**2/(2*9.8))* rho * 9.8) 
+            
+            pB_pascal = p2_pascal + ((fd * L2/d_m * v**2/(2*9.8))* rho * 9.8) 
+            
+            
+                     
+            F0 = kv_asterisco * ((pA_pascal -  pB_pascal)/ G)**0.5 - v*area
+            
+            return F0
     
-        f = Kv_SI * vpt * ((p1_pascal -  p2_pascal)/ G)**0.5
+        sol = newton(FOsolv, 1.5)
+        v = sol
+        
+        
+        f = v*area
+        
         F = np. append(F, f)
 
     F_m3h= F * 3600
