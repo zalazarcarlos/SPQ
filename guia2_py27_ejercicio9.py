@@ -21,7 +21,7 @@ dt = 2
 fd = 0.03
 rho = 1000  #kg/m3
 
-K_codo = 0.9 #codo 90º
+K_codo = 0.9 #codo 90Âº
 
 #Datos Escalon P1
 t0_e1= 500
@@ -51,7 +51,7 @@ t0_exd2 = 500
 tau2 = 100
 A_exd2 = 0
 
-#límites "y". Cambio de escala
+#lÃ­mites "y". Cambio de escala
 escalapresion = (0,4)
 escalaF = (1,10)
 
@@ -59,7 +59,7 @@ escalaF = (1,10)
 
 def ejercicio9():
     
-    #conversión automática de datos
+    #conversiÃ³n automÃ¡tica de datos
     d_m1 = d_in1 * 0.0254
     area1 = np.pi * d_m1**2 / 4
     
@@ -101,7 +101,8 @@ def ejercicio9():
             htotal = fd * (L1/d_m1) * (v1**2) / 2 \
             + fd * (L2/d_m2) * (v2**2) / 2 \
             + K_ensan * (v1**2) / 2 \
-            + 2*(K_codo * (v1**2) / 2)
+            + K_codo * (v1**2) / 2 \
+            + K_codo * (v2**2) / 2
             
             F0 = (p1_pascal - p2_pascal) / rho \
             + (v1**2 - v2**2)/ rho\
@@ -126,7 +127,7 @@ def ejercicio9():
     columnas = ['tiempo_s', 'p1_bar', 'p2_bar', 'velf_m/s', 'F_m3/s', 'F_m3/h']
     df = pd.DataFrame(valores, columns=columnas)
 
-    #gráficos
+    #grÃ¡ficos
     fig, ax1 = plt.subplots()
 
     ax1.plot(T, P1, label="P1")
@@ -139,7 +140,7 @@ def ejercicio9():
     ax2.set_ylabel('$F (m^3/h)$', color='g')
     ax2.tick_params('y', colors='g')
 
-    #limites en y (Corrección de escala)
+    #limites en y (CorrecciÃ³n de escala)
     ax1.set_ylim(escalapresion)
     ax2.set_ylim(escalaF)
     ax1.legend()
