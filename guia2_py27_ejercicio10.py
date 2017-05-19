@@ -21,9 +21,9 @@ dt = 2
 
 epsilon = 0.0001  #m
 rho = 1000  #kg/m3
-viscosidad = 0.001 #Kg/(m·s)
+viscosidad = 0.001 #Kg/(mÂ·s)
 
-K_codo = 0.9 #codo 90º
+K_codo = 0.9 #codo 90Âº
 
 #Datos Escalon P1
 t0_e1= 500
@@ -53,14 +53,14 @@ t0_exd2 = 500
 tau2 = 100
 A_exd2 = 0
 
-#límites "y". Cambio de escala
+#lÃ­mites "y". Cambio de escala
 escalapresion = (0,4)
 escalaF = (1,10)
         
 
 def ejercicio10():
     
-    #conversión automática de datos
+    #conversiÃ³n automÃ¡tica de datos
     
     
     d_m1 = d_in1 * 0.0254
@@ -74,7 +74,7 @@ def ejercicio10():
     K_ensan = (1 - area1 / area2)**2  #ensanchamiento brusco, A2 >> A1, 1 cabeza de velocidad
 
     def friccion_darcy(e_d, Re):
-        """método de haaland"""
+        """mÃ©todo de haaland"""
         if Re < 3000:
             friccion_darcy = 64 / Re
         else:
@@ -121,6 +121,7 @@ def ejercicio10():
             + fd2 * (L2/d_m2) * (v2**2) / 2 \
             + K_ensan * (v1**2) / 2 \
             + K_codo * (v1**2) / 2
+            + K_codo * (v2**2) / 2
             
             F0 = (p1_pascal - p2_pascal) / rho \
             + (v1**2 - v2**2)/ rho\
@@ -148,7 +149,7 @@ def ejercicio10():
     columnas = ['tiempo_s', 'p1_bar', 'p2_bar', 'velf_m/s', 'F_m3/s', 'F_m3/h']
     df = pd.DataFrame(valores, columns=columnas)
 
-    #gráficos
+    #grÃ¡ficos
     fig, ax1 = plt.subplots()
 
     ax1.plot(T, P1, label="P1")
@@ -161,7 +162,7 @@ def ejercicio10():
     ax2.set_ylabel('$F (m^3/h)$', color='g')
     ax2.tick_params('y', colors='g')
 
-    #limites en y (Corrección de escala)
+    #limites en y (CorrecciÃ³n de escala)
     ax1.set_ylim(escalapresion)
     ax2.set_ylim(escalaF)
     ax1.legend()
