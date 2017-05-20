@@ -49,7 +49,7 @@ t0_exd2 = 500
 tau2 = 100
 A_exd2 = 0
 
-#límites "y". Cambio de escala
+#lÃ­mites "y". Cambio de escala
 escalapresion = (0,4)
 escalaF = (1,7)
 
@@ -57,7 +57,7 @@ escalaF = (1,7)
 
 def ejercicio11():
     
-    #conversión automática de datos
+    #conversiÃ³n automÃ¡tica de datos
     d_m = d_in * 0.0254
     area = np.pi * d_m**2 / 4
     
@@ -88,8 +88,8 @@ def ejercicio11():
         #En lugar de despejar v, resuelvo para F0=0
         def FOsolv (v):
             
-            F0 = (p1_pascal - p2_pascal) / rho \
-            - fd * L * v ** 2 * 0.5 / d_m \
+            F0 = (p1_pascal - p2_pascal) / (rho * 9.8) \
+            - fd * L/d_m * v ** 2  / (2 * 9.8) \
             - z
             return F0
         
@@ -111,7 +111,7 @@ def ejercicio11():
     columnas = ['tiempo_s', 'p1_bar', 'p2_bar', 'velc_m/s', 'F_m3/s', 'F_m3/h']
     df = pd.DataFrame(valores, columns=columnas)
 
-    #gráficos
+    #grÃ¡ficos
     fig, ax1 = plt.subplots()
 
     ax1.plot(T, P1, label="P1")
@@ -124,7 +124,7 @@ def ejercicio11():
     ax2.set_ylabel('$F (m^3/h)$', color='g')
     ax2.tick_params('y', colors='g')
 
-    #limites en y (Corrección de escala)
+    #limites en y (CorrecciÃ³n de escala)
     ax1.set_ylim(escalapresion)
     ax2.set_ylim(escalaF)
     ax1.legend()
