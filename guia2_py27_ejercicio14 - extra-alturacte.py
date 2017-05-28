@@ -11,23 +11,20 @@ from scipy.optimize import newton
 from SPQentrada import *
 
 #Datos iniciales
-p1 = 3.2
+p1 = 2
 p2 = 1
 d_in = 1 
-L1 = 10
-ht = 21
-L2 = 20
+L = 51
 dt = 2
 fd = 0.03
 rho = 1000  #kg/m3
-g = 9.8
 
-K = 0.9 #codo 90Âº
+K = 0.9 #codo 90º
 
-h_mano1 = 0
-h_mano2 = 7 
-h_mano3 = 14
-h_mano4 = 21
+L_mano1 = 10  #tramo hasta el 1º manómetro
+L_mano2 = 10 + 7 
+L_mano3 = 10 + 14
+L_mano4 = 10 + 21
 
 #Datos Escalon P1
 t0_e1= 500
@@ -57,14 +54,15 @@ t0_exd2 = 500
 tau2 = 100
 A_exd2 = 0
 
-#lÃ­mites "y". Cambio de escala
-escalapresion = (0,8)
+#límites "y". Cambio de escala
+escalapresion = (0,4)
 escalaF = (1,7)
+
 
 
 def ejercicio14():
     
-    #conversiÃ³n automÃ¡tica de datos
+    #conversión automática de datos
     d_m = d_in * 0.0254
     area = np.pi * d_m**2 / 4
     
@@ -99,10 +97,9 @@ def ejercicio14():
         #En lugar de despejar v, resuelvo para F0=0
         def FOsolv (v):
             
-            F0 = (p1_pascal - p2_pascal) / (rho * g) \
-            - fd * (L1+ht+L2)/d_m * v ** 2  / (2 * g) \
-            - 2 * (K * (v**2) / (2 * g))\
-            - 21
+            F0 = (p1_pascal - p2_pascal) / rho \
+            - fd * L * v ** 2 * 0.5 / d_m \
+            - 2 * (K * (v**2) / 2)
             return F0
         
         sol = newton(FOsolv, 1.5)
@@ -111,36 +108,34 @@ def ejercicio14():
         V = np.append(V, v)
         
         
-        # 1Âº ManÃ³metro
+        # 1º Manómetro
         p_mano_pasca1 = rho * (p1_pascal/rho \
-                               - fd * ((L1+h_mano1)/ d_m) * (v**2 /2))
+                               - fd * (L_mano1 / d_m) * (v**2 /2) \
+                               - K * (v**2 /2))
                                
         p_mano1 = p_mano_pasca1 / 100000
         P_MANO1 = np.append(P_MANO1, p_mano1)
         
-        # 2Âº ManÃ³metro
-        p_mano_pasca2 = rho * g * (p1_pascal/(rho*g) \
-                               - fd * ((L1+h_mano2) / d_m) * (v**2 / (2*g)) \
-                               - K * (v**2 / (2*g))\
-                               - h_mano2)
+        # 2º Manómetro
+        p_mano_pasca2 = rho * (p1_pascal/rho \
+                               - fd * (L_mano2 / d_m) * (v**2 /2) \
+                               - K * (v**2 /2))
         
         p_mano2 = p_mano_pasca2 / 100000
         P_MANO2 = np.append(P_MANO2, p_mano2)
                                
-        # 3Âº ManÃ³metro
-        p_mano_pasca3 = rho * g * (p1_pascal/(rho*g) \
-                               - fd * ((L1+h_mano3) / d_m) * (v**2 / (2*g)) \
-                               - K * (v**2 / (2*g))\
-                               - h_mano3)
+        # 3º Manómetro
+        p_mano_pasca3 = rho * (p1_pascal/rho \
+                               - fd * (L_mano3 / d_m) * (v**2 /2) \
+                               - K * (v**2 /2))
         
         p_mano3 = p_mano_pasca3 / 100000
         P_MANO3 = np.append(P_MANO3, p_mano3)
                                
-        # 4Âº ManÃ³metro
-        p_mano_pasca4 = rho * g * (p1_pascal/(rho*g) \
-                               - fd * ((L1+h_mano4) / d_m) * (v**2 / (2*g)) \
-                               - K * (v**2 / (2*g))\
-                               - h_mano4)
+        # 4º Manómetro
+        p_mano_pasca4 = rho * (p1_pascal/rho \
+                               - fd * (L_mano4 / d_m) * (v**2 /2) \
+                               - K * (v**2 /2))
         
         p_mano4 = p_mano_pasca4 / 100000
         P_MANO4 = np.append(P_MANO4, p_mano4)
@@ -149,7 +144,6 @@ def ejercicio14():
         F = np. append(F, f)
 
     F_m3h= F * 3600
-
 
     #creacion de tabla df para pandas:
     valores = {'tiempo_s':T,
@@ -167,7 +161,7 @@ def ejercicio14():
                 'p2_bar', 'velc_m/s', 'F_m3/s', 'F_m3/h']
     df = pd.DataFrame(valores, columns=columnas)
 
-    #grÃ¡ficos
+    #gráficos
     fig, ax1 = plt.subplots()
 
     ax1.plot(T, P1, label="P1")
@@ -180,7 +174,7 @@ def ejercicio14():
     ax2.set_ylabel('$F (m^3/h)$', color='g')
     ax2.tick_params('y', colors='g')
 
-    #limites en y (CorrecciÃ³n de escala)
+    #limites en y (Corrección de escala)
     ax1.set_ylim(escalapresion)
     ax2.set_ylim(escalaF)
     ax1.legend()
